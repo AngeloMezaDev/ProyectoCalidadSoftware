@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.sql.CallableStatement;
+import java.util.InputMismatchException;
+import java.util.Scanner;
 
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -306,5 +308,89 @@ public class ctrlProductos {
             conn.setAutoCommit(true); // Habilitar la confirmación automática
             conexionBD.closeConnection(); // Cierra la conexión
         }
+    }
+    
+    //validar cadena de texto con espacios
+    public boolean validarLetra(String txtInput){
+        boolean bandera=true;
+        try{
+            bandera=true;
+            int i=0;
+            txtInput=txtInput.trim();//quita los epacios al inicio y al final
+            if(bandera=true){
+                for(i=0;i<txtInput.length();i++){
+                    if(!Character.isLetter(txtInput.charAt(i)) && !Character.isSpaceChar(txtInput.charAt(i))){//diferente a una letra y espacios en blanco
+                       bandera=false;
+                    }
+                }
+            }
+        }catch (Exception ex){
+            System.out.println("Diguite solo letras en la entrada por teclado");
+        }
+        return bandera;
+    }
+    //validar una String de letras,numeros y espacios
+    public boolean validarCadena(String str) {
+        boolean bandera=true;
+        try{
+            bandera=true;
+            int i=0;
+            str=str.trim();//quita los epacios al inicio y al final
+            if(bandera=true){
+                for(i=0;i<str.length();i++){
+                    if(!Character.isLetterOrDigit(str.charAt(i)) && !Character.isSpaceChar(str.charAt(i))){
+                       bandera=false;
+                    }
+                }
+            }
+        }catch (Exception ex){
+            System.out.println("Diguite correctamente en la entrada por teclado");
+        }
+        return bandera;
+    }
+    //validar un email
+    public boolean validarEmail(String email) {
+        boolean bandera=true;
+        char c;
+        try{
+            bandera=true;
+            int i=0;
+            email=email.trim();//quita los epacios al inicio y al final
+            if(bandera=true){
+                for(i=0;i<email.length();i++){
+                    c = email.charAt(i);
+                    if(!Character.isLetterOrDigit(c) && c != '@' && c != '-' && c != '_'
+                && c != '#' && c != '*' && c != '.'){//si es diferente a estos caracteres entra a la condición
+                       bandera=false;
+                    }
+                }
+            }
+        }catch (Exception ex){
+            System.out.println("Diguite correctamente en la entrada por teclado");
+        }
+        return bandera;
+    }
+    //validar número de telefono que empiece con 09
+    public boolean validarTelefono(String telf){
+        boolean bandera=true;
+        try{
+            bandera=true;
+            int i=0;
+            char[] arreglo =  telf.toCharArray();
+            if(bandera=true){
+                if(arreglo[0]=='0' && arreglo[1]=='9'){
+                    for(i=0;i<arreglo.length;i++){
+                        if(!Character.isDigit(arreglo[i])){
+                           bandera=false;
+                        }
+                    }
+                } else {
+                    bandera=false;
+                }
+            }
+        }catch (Exception ex){
+            System.out.println("Diguite solo letras en la entrada por teclado");
+        }
+        return bandera;
     }
 }

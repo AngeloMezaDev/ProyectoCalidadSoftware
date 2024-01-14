@@ -5,6 +5,7 @@
 package Vistas;
 
 import Controlador.ctrlBodegueroInventario;
+import Controlador.ctrlProductos;
 import Modelo.Inventario;
 import java.awt.Color;
 import java.sql.SQLException;
@@ -340,7 +341,7 @@ public class frmInventario extends javax.swing.JFrame {
         salirPanelLayout.setHorizontalGroup(
             salirPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, salirPanelLayout.createSequentialGroup()
-                .addContainerGap(10, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblLogout)
@@ -353,7 +354,7 @@ public class frmInventario extends javax.swing.JFrame {
                 .addGroup(salirPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel23)
                     .addComponent(lblLogout))
-                .addContainerGap(10, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout BtnOpcion7Layout = new javax.swing.GroupLayout(BtnOpcion7);
@@ -533,6 +534,12 @@ public class frmInventario extends javax.swing.JFrame {
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/search.png"))); // NOI18N
         bgPanelBotonNuevo.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 30, -1, -1));
+
+        txtBusqueda.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtBusquedaKeyTyped(evt);
+            }
+        });
 
         cmbCategoria.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione una categoria...", "Metales", "Madera" }));
 
@@ -719,15 +726,23 @@ public class frmInventario extends javax.swing.JFrame {
         jTableInventario.setRowSorter(sorter);
 
         List<RowFilter<DefaultTableModel, Object>> filters = new ArrayList<>();
-
+        ctrlProductos ctrlP = new ctrlProductos();
+        
         // Caso 1: Filtrar por el contenido de txtBusqueda en la columna de nombre (columna 1)
         String textoBusqueda = txtBusqueda.getText().trim().toLowerCase();
         if (!textoBusqueda.isEmpty()) {
             try {
+                //Validar el input de Nombre
+                if (!ctrlP.validarLetra(textoBusqueda)){ 
+                   throw new ClassNotFoundException("El campo Nombre solo permite letras");
+                }
                 RowFilter<DefaultTableModel, Object> nombreFilter = RowFilter.regexFilter("(?i)" + textoBusqueda, 1); // El 1 indica la columna del nombre
                 filters.add(nombreFilter);
             } catch (java.util.regex.PatternSyntaxException e) {
                 System.err.println("Error en el patrón de búsqueda de nombre: " + e.getMessage());
+            } catch (ClassNotFoundException ex) {
+                    JOptionPane.showMessageDialog(this, "ERROR: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    return; //detiene la ejecución
             }
         }
 
@@ -745,6 +760,10 @@ public class frmInventario extends javax.swing.JFrame {
         // Caso 3: Filtrar exactamente cuando ambos filtros estén llenos
         if (!textoBusqueda.isEmpty() && !categoriaSeleccionada.equals("Seleccione una categoria...")) {
             try {
+                //Validar el input de Nombre
+                if (!ctrlP.validarLetra(textoBusqueda)){ 
+                   throw new ClassNotFoundException("El campo Nombre solo permite letras");
+                }               
                 RowFilter<DefaultTableModel, Object> nombreFilter = RowFilter.regexFilter("(?i)" + textoBusqueda, 1); // El 1 indica el índice de la columna de nombre
                 RowFilter<DefaultTableModel, Object> categoriaFilter = RowFilter.regexFilter("(?i)" + categoriaSeleccionada, 4); // El 4 indica el índice de la columna de categoría
                 RowFilter<DefaultTableModel, Object> combinedFilter = RowFilter.andFilter(filters);
@@ -752,6 +771,9 @@ public class frmInventario extends javax.swing.JFrame {
                 filters.add(combinedFilter);
             } catch (java.util.regex.PatternSyntaxException e) {
                 System.err.println("Error en el patrón de búsqueda: " + e.getMessage());
+            } catch (ClassNotFoundException ex) {
+                    JOptionPane.showMessageDialog(this, "ERROR: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    return; //detiene la ejecución
             }
         }
 
@@ -773,6 +795,15 @@ public class frmInventario extends javax.swing.JFrame {
         productos.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnProductosMouseClicked
+
+    private void txtBusquedaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBusquedaKeyTyped
+        char c=evt.getKeyChar();
+        if(!Character.isLetter(c) && !Character.isSpaceChar(c)){
+            evt.consume();//bloquea la entrada de datos
+        } else if (txtBusqueda.getText().trim().length() >= 25){
+            evt.consume();
+        }
+    }//GEN-LAST:event_txtBusquedaKeyTyped
 
     //Método para cargar datos
     public void cargarDatos() throws ClassNotFoundException, SQLException {
